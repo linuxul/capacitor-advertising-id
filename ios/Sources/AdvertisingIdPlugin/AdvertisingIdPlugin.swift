@@ -6,9 +6,9 @@ public class AdvertisingIdPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "AdvertisingIdPlugin"
     public let jsName = "AdvertisingId"
     public let pluginMethods: [CAPPluginMethod] = [
-        CAPPluginMethod(name: "requestTracking", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "getAdvertisingId", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "getAdvertisingStatus", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "requestTracking", returnType: .promise),
+        CAPPluginMethod(name: "getAdvertisingId", returnType: .promise),
+        CAPPluginMethod(name: "getAdvertisingStatus", returnType: .promise)
     ]
     private let implementation = AdvertisingId()
 

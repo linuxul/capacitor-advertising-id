@@ -3,12 +3,14 @@ import AdSupport
 import AppTrackingTransparency
 
 @objc public class AdvertisingId: NSObject {
-    // Make own tracking enum to account for iOS 12-13
     @objc public enum TrackingStatus: Int {
+        // The case names are public API.
+        // swiftlint:disable identifier_name
         case Authorized
         case Denied
         case NotDetermined
         case Restricted
+        // swiftlint:enable identifier_name
 
         func name() -> String {
             switch self {
@@ -21,18 +23,14 @@ import AppTrackingTransparency
     }
 
     @objc public func requestTracking(completion: (@escaping (TrackingStatus) -> Void)) {
-        if #available(iOS 14, *) {
-            ATTrackingManager.requestTrackingAuthorization { status in
-                switch status {
-                case .authorized: completion(.Authorized)
-                case .denied: completion(.Denied)
-                case .notDetermined: completion(.NotDetermined)
-                case .restricted: completion(.Restricted)
-                @unknown default: completion(.NotDetermined)
-                }
+        ATTrackingManager.requestTrackingAuthorization { status in
+            switch status {
+            case .authorized: completion(.Authorized)
+            case .denied: completion(.Denied)
+            case .notDetermined: completion(.NotDetermined)
+            case .restricted: completion(.Restricted)
+            @unknown default: completion(.NotDetermined)
             }
-        } else {
-            completion(.Authorized)
         }
     }
 
@@ -41,16 +39,12 @@ import AppTrackingTransparency
     }
 
     @objc public func getAdvertisingStatus() -> TrackingStatus {
-        if #available(iOS 14, *) {
-            switch ATTrackingManager.trackingAuthorizationStatus {
-            case .authorized: return .Authorized
-            case .denied: return .Denied
-            case .notDetermined: return .NotDetermined
-            case .restricted: return .Restricted
-            @unknown default: return .NotDetermined
-            }
-        } else {
-            return .Authorized
+        switch ATTrackingManager.trackingAuthorizationStatus {
+        case .authorized: return .Authorized
+        case .denied: return .Denied
+        case .notDetermined: return .NotDetermined
+        case .restricted: return .Restricted
+        @unknown default: return .NotDetermined
         }
     }
 }
