@@ -6,19 +6,20 @@ public class AdvertisingIdPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "AdvertisingIdPlugin"
     public let jsName = "AdvertisingId"
     public let pluginMethods: [CAPPluginMethod] = [
-        CAPPluginMethod(name: "requestTracking", returnType: .promise),
-        CAPPluginMethod(name: "getAdvertisingId", returnType: .promise),
-        CAPPluginMethod(name: "getAdvertisingStatus", returnType: .promise)
+        .async("requestTracking", AdvertisingIdPlugin.requestTracking),
+        .promise("getAdvertisingId", AdvertisingIdPlugin.getAdvertisingId),
+        .promise("getAdvertisingStatus", AdvertisingIdPlugin.getAdvertisingStatus)
     ]
     private let implementation = AdvertisingId()
 
-    @objc func requestTracking(_ call: CAPPluginCall) {
-        implementation.requestTracking { status in
-            call.resolve([ "value": status.name() ])
-        }
+    /// Presents the App Tracking Transparency prompt, from the main actor, and returns the answer.
+    @MainActor
+    func requestTracking(_ call: CAPPluginCall) async -> JSObject {
+        let status = await implementation.requestTracking()
+        return ["value": status.name()]
     }
 
-    @objc func getAdvertisingId(_ call: CAPPluginCall) {
+    func getAdvertisingId(_ call: CAPPluginCall) {
         let id = implementation.getAdvertisingId()
         let status = implementation.getAdvertisingStatus()
         call.resolve([
@@ -27,7 +28,7 @@ public class AdvertisingIdPlugin: CAPPlugin, CAPBridgedPlugin {
         ])
     }
 
-    @objc func getAdvertisingStatus(_ call: CAPPluginCall) {
+    func getAdvertisingStatus(_ call: CAPPluginCall) {
         let status = implementation.getAdvertisingStatus()
         call.resolve([
             "status": status.name()

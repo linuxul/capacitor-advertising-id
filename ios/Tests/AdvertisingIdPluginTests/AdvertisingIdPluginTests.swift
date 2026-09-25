@@ -1,4 +1,5 @@
 import XCTest
+import AppTrackingTransparency
 @testable import AdvertisingIdPlugin
 
 class AdvertisingIdTests: XCTestCase {
@@ -7,6 +8,13 @@ class AdvertisingIdTests: XCTestCase {
         XCTAssertEqual(AdvertisingId.TrackingStatus.Denied.name(), "Denied")
         XCTAssertEqual(AdvertisingId.TrackingStatus.NotDetermined.name(), "Not Determined")
         XCTAssertEqual(AdvertisingId.TrackingStatus.Restricted.name(), "Restricted")
+    }
+
+    func testAuthorizationStatusesMapToTrackingStatuses() {
+        XCTAssertEqual(AdvertisingId.trackingStatus(.authorized), .Authorized)
+        XCTAssertEqual(AdvertisingId.trackingStatus(.denied), .Denied)
+        XCTAssertEqual(AdvertisingId.trackingStatus(.notDetermined), .NotDetermined)
+        XCTAssertEqual(AdvertisingId.trackingStatus(.restricted), .Restricted)
     }
 
     func testPluginRegistration() {

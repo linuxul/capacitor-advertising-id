@@ -22,16 +22,10 @@ import AppTrackingTransparency
         }
     }
 
-    @objc public func requestTracking(completion: (@escaping (TrackingStatus) -> Void)) {
-        ATTrackingManager.requestTrackingAuthorization { status in
-            switch status {
-            case .authorized: completion(.Authorized)
-            case .denied: completion(.Denied)
-            case .notDetermined: completion(.NotDetermined)
-            case .restricted: completion(.Restricted)
-            @unknown default: completion(.NotDetermined)
-            }
-        }
+    /// Asks for tracking authorization, showing the system prompt if the user has not answered it yet, and returns
+    /// the status once the user answers.
+    public func requestTracking() async -> TrackingStatus {
+        return AdvertisingId.trackingStatus(await ATTrackingManager.requestTrackingAuthorization())
     }
 
     @objc public func getAdvertisingId() -> String {
@@ -39,7 +33,11 @@ import AppTrackingTransparency
     }
 
     @objc public func getAdvertisingStatus() -> TrackingStatus {
-        switch ATTrackingManager.trackingAuthorizationStatus {
+        return AdvertisingId.trackingStatus(ATTrackingManager.trackingAuthorizationStatus)
+    }
+
+    static func trackingStatus(_ status: ATTrackingManager.AuthorizationStatus) -> TrackingStatus {
+        switch status {
         case .authorized: return .Authorized
         case .denied: return .Denied
         case .notDetermined: return .NotDetermined
